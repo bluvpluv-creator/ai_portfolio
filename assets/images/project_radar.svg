@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgRadar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="16" fill="url(#bgRadar)"/>
+  <g transform="translate(200, 110)">
+    <circle cx="0" cy="0" r="45" fill="none" stroke="#34d399" stroke-width="2"/>
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="0" y1="0" x2="32" y2="-32" stroke="#6ee7b7" stroke-width="3"/>
+    <circle cx="32" cy="-32" r="5" fill="#6ee7b7"/>
+  </g>
+  <text x="200" y="195" font-family="Outfit, sans-serif" font-weight="700" font-size="16" fill="#6ee7b7" text-anchor="middle">📡 AI TREND RADAR</text>
+</svg>

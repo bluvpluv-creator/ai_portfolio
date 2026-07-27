@@ -1,0 +1,94 @@
+/* ==========================================================================
+   재사용 가능한 뱃지(Badge) 및 태그 컴포넌트 스타일 규격
+   design.md 가이드 기반: 라운드 뱃지 및 기술 태그
+   ========================================================================== */
+
+/* 뱃지 기본 공통 스타일 */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading, 'Inter', sans-serif);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--radius-btn, 8px);
+    width: fit-content;
+    white-space: nowrap;
+}
+
+/* 뱃지 색상 바리에이션 */
+
+/* 1. 블루 뱃지 (학부 / 카테고리 기본) */
+.badge-blue {
+    background-color: rgba(59, 130, 246, 0.08);
+    color: var(--primary-blue, #3b82f6);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* 2. 인디고 뱃지 (바이브코딩 / 기술 강조) */
+.badge-indigo {
+    background-color: rgba(99, 102, 241, 0.08);
+    color: var(--primary-indigo, #6366f1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* 3. 퍼플 뱃지 (AI 트렌드 / 프롬프트) */
+.badge-purple {
+    background-color: rgba(139, 92, 246, 0.08);
+    color: var(--accent-purple, #8b5cf6);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* 4. 에메랄드 뱃지 (성공 / 데모 라이브 상태) */
+.badge-emerald {
+    background-color: rgba(16, 185, 129, 0.08);
+    color: var(--accent-emerald, #10b981);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* 5. 다크 뱃지 (프로젝트 썸네일 상단 카테고리 태그) */
+.badge-dark-glass {
+    background-color: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-btn, 8px);
+}
+
+/* 기술 스택 태그 칩 스타일 */
+.tag-chip {
+    background-color: #f1f5f9;
+    color: var(--text-secondary, #475569);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* 필터 탭 캡슐 뱃지 */
+.filter-pill {
+    background-color: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-pill, 30px);
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary, #475569);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: var(--shadow-subtle);
+}
+
+.filter-pill:hover {
+    border-color: var(--primary-blue, #3b82f6);
+    color: var(--primary-blue, #3b82f6);
+}
+
+.filter-pill.active {
+    background: linear-gradient(135deg, var(--primary-blue, #3b82f6), var(--primary-indigo, #6366f1));
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: var(--glow-blue);
+}

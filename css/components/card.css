@@ -1,0 +1,94 @@
+/* ==========================================================================
+   재사용 가능한 카드(Card) 컴포넌트 스타일 규격
+   design.md 가이드 기반: Soft Subdued Glow 입체감 및 Elevate 호버 효과
+   ========================================================================== */
+
+/* 카드 기본 서피스 스타일 */
+.card {
+    background-color: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-lg, 16px);
+    box-shadow: var(--shadow-card);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 호버 시 떠오름 및 블루 광원 그림자 효과 (Soft Subdued Glow) */
+.card-hoverable:hover {
+    transform: translateY(-6px);
+    border-color: var(--border-accent, rgba(59, 130, 246, 0.4));
+    box-shadow: var(--shadow-hover, 0 20px 40px -6px rgba(59, 130, 246, 0.15));
+}
+
+/* 히어로 프로필 전용 카드 */
+.hero-card {
+    background-color: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-xl, 16px);
+    padding: 36px;
+    box-shadow: var(--shadow-card);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 36px;
+    align-items: center;
+}
+
+/* 프로젝트 그리드 카드 레이아웃 */
+.project-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.project-thumb-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background-color: #0f172a;
+    overflow: hidden;
+}
+
+.project-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-thumb-img {
+    transform: scale(1.04);
+}
+
+.project-card-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.project-title {
+    font-family: var(--font-heading, 'Inter', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary, #0f172a);
+    margin-bottom: 8px;
+}
+
+.project-summary {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #475569);
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+/* 연락처 다크 히어로 카드 */
+.contact-card {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #ffffff;
+    border-radius: var(--radius-xl, 16px);
+    padding: 40px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+}

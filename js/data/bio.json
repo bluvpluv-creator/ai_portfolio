@@ -1,0 +1,28 @@
+{
+  "name": "김민서",
+  "englishName": "Minseo Kim",
+  "title": "Language & AI 융합 개발자",
+  "subtitle": "언어공학과 인공지능을 융합하고, 바이브코딩(Vibe Coding)으로 아이디어를 현실로 만듭니다.",
+  "university": "한국외국어대학교 (서울)",
+  "department": "Language & AI 융합학부",
+  "status": "재학 중 / AI 프로젝트 리드",
+  "avatar": "assets/images/profile_avatar.svg",
+  "bioSummary": "언어에 대한 깊은 이해와 최신 LLM/AI 트렌드를 결합하여 사용자가 바로 체감할 수 있는 유용한 웹서비스와 앱을 구축합니다. 최신 AI 도구를 민첩하게 다루는 바이브코딩 방식을 적극 활용합니다.",
+  "skills": [
+    { "name": "Language & AI 융합", "icon": "🗣️", "desc": "NLP, 자연어 이해, 프롬프트 엔지니어링" },
+    { "name": "AI 트렌드 & 바이브코딩", "icon": "⚡", "desc": "LLM API 활용, 빠른 프로토타이핑 & 애자일 개발" },
+    { "name": "웹 & 앱 서비스 구축", "icon": "💻", "desc": "Full-stack Web, Interactive UI/UX, REST API" }
+  ],
+  "interests": [
+    "LLM 에이전트 & RAG 구축",
+    "멀티모달 AI 웹 서비스",
+    "AI 기반 인터랙티브 스토리텔링",
+    "생산성을 극대화하는 바이브코딩 개발 패턴"
+  ],
+  "socials": {
+    "email": "minseo.kim.ai@hufs.ac.kr",
+    "github": "https://github.com",
+    "blog": "https://velog.io",
+    "linkedin": "https://linkedin.com"
+  }
+}

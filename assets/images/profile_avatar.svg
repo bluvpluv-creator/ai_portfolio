@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#avatarGrad)" />
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#glowGrad)" stroke-width="4" />
+  
+  <!-- Modern Geometric Profile Icon -->
+  <g transform="translate(100, 100)">
+    <!-- Face / Head outline -->
+    <circle cx="0" cy="-18" r="32" fill="#ffffff" opacity="0.95" />
+    <!-- Shoulder / Body curve -->
+    <path d="M -50,55 C -50,20 -25,12 0,12 C 25,12 50,20 50,55 Z" fill="#ffffff" opacity="0.95" />
+    <!-- Tech Accent Orbit -->
+    <ellipse cx="0" cy="-18" rx="42" ry="16" fill="none" stroke="#60a5fa" stroke-width="3" stroke-dasharray="8 6" transform="rotate(-25)" />
+    <circle cx="38" cy="-28" r="6" fill="#60a5fa" />
+    <circle cx="-38" cy="-8" r="4" fill="#a855f7" />
+  </g>
+</svg>
