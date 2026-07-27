@@ -1,12 +1,13 @@
 /**
  * UI 컴포넌트 데모 쇼케이스 어플리케이션 (js/demoApp.js)
- * 독립적으로 모듈화된 UI 컴포넌트(Button, Badge, Card, ModalComponent, Toast)의 렌더링 및 인터랙션을 테스트합니다.
+ * 독립적으로 모듈화된 UI 컴포넌트(Button, Badge, Card, ModalComponent, AdminModal, Toast)의 렌더링 및 인터랙션을 테스트합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './components/Button.js';
 import { Badge } from './components/Badge.js';
 import { Card } from './components/Card.js';
 import { ModalComponent } from './components/ModalComponent.js';
+import { AdminModal } from './components/AdminModal.js';
 import { Toast } from './components/Toast.js';
 
 class DemoApp {
@@ -19,12 +20,15 @@ class DemoApp {
     }
 
     /**
-     * 모달 및 토스트 모듈 참조 초기화
+     * 모달 및 관리자 모듈 참조 초기화
      */
     initModules() {
         const modalOverlay = document.getElementById('projectModalOverlay');
         if (modalOverlay) {
             this.modal = new ModalComponent(modalOverlay);
+            this.adminModal = new AdminModal(modalOverlay, () => {
+                if (this.toast) this.toast.show('✨ 관리자 페이지 데이터가 업데이트되었습니다.');
+            });
         }
 
         const toastEl = document.getElementById('toastNotification');
@@ -38,7 +42,6 @@ class DemoApp {
      * 1. 버튼 컴포넌트(Button.js) 바리에이션 및 크기 테스트 렌더링
      */
     renderButtons() {
-        // Variants 테스트
         const btnPrimary = new Button({ text: 'Primary Button', variant: 'primary', icon: '🚀' }).render();
         const btnSecondary = new Button({ text: 'Secondary Button', variant: 'secondary', icon: '🔍' }).render();
         const btnAccent = new Button({ text: 'Accent Button', variant: 'accent', icon: '⚡' }).render();
@@ -49,7 +52,6 @@ class DemoApp {
         document.getElementById('btnVariantAccent')?.appendChild(btnAccent);
         document.getElementById('btnGhostDark')?.appendChild(btnGhostDark);
 
-        // Sizes 테스트
         const btnLg = new Button({ text: 'Large Size (48px)', variant: 'primary', size: 'lg' }).render();
         const btnMd = new Button({ text: 'Medium Size (40px)', variant: 'primary', size: 'md' }).render();
         const btnSm = new Button({ text: 'Small Size (32px)', variant: 'primary', size: 'sm' }).render();
@@ -58,7 +60,6 @@ class DemoApp {
         document.getElementById('btnSizeMd')?.appendChild(btnMd);
         document.getElementById('btnSizeSm')?.appendChild(btnSm);
 
-        // Interactive Click 테스트
         let count = 0;
         const interactiveBtn = new Button({
             text: '클릭 수 카운터: 0',
@@ -91,14 +92,12 @@ class DemoApp {
         document.getElementById('badgePurple')?.appendChild(badgePurple);
         document.getElementById('badgeEmerald')?.appendChild(badgeEmerald);
 
-        // Tech Tag Chips 조립
         const tags = ['Gemini API', 'Vibe Coding', 'Inter Font', 'Sharp Elegant Style', 'Canvas Particles'];
         const tagContainer = document.getElementById('techTagContainer');
         if (tagContainer) {
             tagContainer.innerHTML = tags.map(t => Badge.createTagHtml(t)).join('');
         }
 
-        // Filter Pills 조립
         const filterContainer = document.getElementById('demoFilterPills');
         if (filterContainer) {
             filterContainer.innerHTML = `
@@ -136,11 +135,11 @@ class DemoApp {
     }
 
     /**
-     * 4. 모달 & 토스트 트리거 버튼 렌더링
+     * 4. 모달, 관리자 페이지 & 토스트 트리거 버튼 렌더링
      */
     renderInteractiveTriggers() {
         const modalTriggerBtn = new Button({
-            text: '🪟 샘플 모달 팝업 열기 테스트',
+            text: '🪟 상세 모달 열기 테스트',
             variant: 'primary',
             size: 'lg',
             icon: '🔍',
@@ -153,16 +152,26 @@ class DemoApp {
                         thumbnail: 'assets/images/project_vibe.svg',
                         demoUrl: '#',
                         githubUrl: 'https://github.com',
-                        vibeStory: 'design.md 디자인 토큰(Backdrop blur, Scale-up 팝업)을 사용하여 구축된 독립 모달 팝업입니다.',
-                        features: ['Esc 키 입력 시 모달 닫기 지원', '배경 클릭 시 닫기 지원', '스크롤 방지 고정'],
+                        vibeStory: 'design.md 디자인 토큰을 사용하여 구축된 독립 모달 팝업입니다.',
+                        features: ['Esc 키 입력 시 닫기', '배경 클릭 시 닫기', '스크롤 방지 고정'],
                         tags: ['ModalComponent.js', 'Backdrop Blur', 'design.md']
                     });
                 }
             }
         }).render();
 
+        const adminTriggerBtn = new Button({
+            text: '🔐 관리자 로그인 모달 테스트',
+            variant: 'secondary',
+            size: 'lg',
+            icon: '⚙️',
+            onClick: () => {
+                if (this.adminModal) this.adminModal.open();
+            }
+        }).render();
+
         const toastTriggerBtn = new Button({
-            text: '💬 토스트 알림 팝업 실행 테스트',
+            text: '💬 토스트 알림 실행 테스트',
             variant: 'accent',
             size: 'lg',
             icon: '🔔',
@@ -174,11 +183,11 @@ class DemoApp {
         }).render();
 
         document.getElementById('btnTriggerModal')?.appendChild(modalTriggerBtn);
+        document.getElementById('btnTriggerAdmin')?.appendChild(adminTriggerBtn);
         document.getElementById('btnTriggerToast')?.appendChild(toastTriggerBtn);
     }
 }
 
-// DOM 준비 완료 시 데모 앱 실행
 document.addEventListener('DOMContentLoaded', () => {
     window.demoApp = new DemoApp();
 });
