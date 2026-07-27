@@ -1,9 +1,10 @@
 /**
  * 프로필(Profile) 히어로 섹션 렌더러 모듈
- * LocalStorage에 커스텀 데이터가 있으면 우선 연동하고, 없으면 bio.json을 로드합니다.
+ * Supabase DB(또나 LocalStorage/JSON)에서 자기소개 데이터를 연동 받아 렌더링합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Badge } from './Badge.js';
+import { supabaseService } from '../services/supabaseService.js';
 
 /**
  * 프로필 히어로 섹션 DOM 렌더링 함수
@@ -11,17 +12,8 @@ import { Badge } from './Badge.js';
  */
 export async function renderProfile(containerEl) {
     try {
-        let bioData = null;
-
-        // 1. LocalStorage 우선 체크
-        const storedBio = localStorage.getItem('portfolio_bio');
-        if (storedBio) {
-            bioData = JSON.parse(storedBio);
-        } else {
-            // 2. 기본 bio.json 데이터 로드
-            const response = await fetch('js/data/bio.json');
-            bioData = await response.json();
-        }
+        // Supabase DB / LocalStorage 연동 데이터 가져오기
+        const bioData = await supabaseService.fetchBio();
 
         // 학부 브랜드 뱃지(Badge) 생성
         const univBadgeHtml = new Badge({

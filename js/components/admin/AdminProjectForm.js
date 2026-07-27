@@ -1,9 +1,10 @@
 /**
  * 관리자 새 작업물 추가 폼 컴포넌트 (js/components/admin/AdminProjectForm.js)
- * 프로젝트 제목, 카테고리, 요약, 데모 URL, 바이브코딩 개발 스토리 입력 및 LocalStorage 추가
+ * 프로젝트 정보를 입력받아 Supabase DB 및 LocalStorage에 동시 등록합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from '../Button.js';
+import { supabaseService } from '../../services/supabaseService.js';
 
 export class AdminProjectForm {
     /**
@@ -57,7 +58,7 @@ export class AdminProjectForm {
         // 추가 등록 버튼 조립
         const btnBox = wrapper.querySelector('#addProjBtnBox');
         const addBtn = new Button({
-            text: '➕ 새 작업물 추가 등록',
+            text: '➕ Supabase DB & 로컬에 작업물 추가',
             variant: 'accent',
             size: 'md',
             onClick: () => this.handleAdd(wrapper)
@@ -69,9 +70,9 @@ export class AdminProjectForm {
     }
 
     /**
-     * 작업물 추가 처리 및 LocalStorage 저장
+     * 작업물 추가 처리 (Supabase DB + LocalStorage 동시 등록)
      */
-    handleAdd(wrapper) {
+    async handleAdd(wrapper) {
         const title = wrapper.querySelector('#newProjTitle').value;
         const category = wrapper.querySelector('#newProjCategory').value;
         const summary = wrapper.querySelector('#newProjSummary').value;
@@ -90,7 +91,7 @@ export class AdminProjectForm {
         };
 
         const newProj = {
-            id: 'custom-' + Date.now(),
+            id: 'proj-' + Date.now(),
             title,
             category,
             categoryLabel: categoryLabels[category] || '🤖 LLM / AI 웹앱',
@@ -98,15 +99,13 @@ export class AdminProjectForm {
             thumbnail: 'assets/images/project_radar.svg',
             demoUrl,
             githubUrl: 'https://github.com',
-            tags: ['Vibe Coding', 'Admin Added'],
-            vibeStory: vibeStory || '관리자 페이지에서 등록한 신규 작업물입니다.',
-            features: ['신규 등록 프로젝트', '인터랙티브 기능 탑재']
+            tags: ['Vibe Coding', 'Supabase Cloud'],
+            vibeStory: vibeStory || 'Supabase DB와 연동하여 등록한 새 바이브코딩 작업물입니다.',
+            features: ['Supabase DB 동기화 완료', '인터랙티브 기능 탑재']
         };
 
-        const storedProjects = JSON.parse(localStorage.getItem('portfolio_projects') || '[]');
-        const updatedProjects = [newProj, ...storedProjects];
-
-        localStorage.setItem('portfolio_projects', JSON.stringify(updatedProjects));
+        // Supabase DB 및 LocalStorage 저장 서비스 호출
+        await supabaseService.addProject(newProj);
 
         if (this.onAdd) this.onAdd(newProj);
     }

@@ -1,9 +1,10 @@
 /**
  * 관리자 자기소개 편집 폼 컴포넌트 (js/components/admin/AdminBioForm.js)
- * 이름, 서브타이틀, 한 줄 소개 실시간 편집 및 LocalStorage 저장
+ * 이름, 서브타이틀, 한 줄 소개 실시간 편집 및 Supabase DB + LocalStorage 동시 저장
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from '../Button.js';
+import { supabaseService } from '../../services/supabaseService.js';
 
 export class AdminBioForm {
     /**
@@ -18,7 +19,6 @@ export class AdminBioForm {
      * @returns {HTMLElement}
      */
     render() {
-        // 기존 LocalStorage 자기소개 데이터 가져오기
         const currentBio = JSON.parse(localStorage.getItem('portfolio_bio') || '{}');
 
         const wrapper = document.createElement('div');
@@ -46,7 +46,7 @@ export class AdminBioForm {
         // 저장 버튼 조립
         const btnBox = wrapper.querySelector('#saveBioBtnBox');
         const saveBtn = new Button({
-            text: '💾 자기소개 저장하기',
+            text: '💾 Supabase DB & 로컬에 저장하기',
             variant: 'primary',
             size: 'md',
             onClick: () => this.handleSave(wrapper)
@@ -58,9 +58,9 @@ export class AdminBioForm {
     }
 
     /**
-     * 자기소개 저장 처리
+     * 자기소개 저장 처리 (Supabase DB + LocalStorage 백업)
      */
-    handleSave(wrapper) {
+    async handleSave(wrapper) {
         const name = wrapper.querySelector('#editBioName').value;
         const subtitle = wrapper.querySelector('#editBioSubtitle').value;
         const bioSummary = wrapper.querySelector('#editBioSummary').value;
@@ -73,7 +73,8 @@ export class AdminBioForm {
             bioSummary
         };
 
-        localStorage.setItem('portfolio_bio', JSON.stringify(updatedBio));
+        // Supabase DB 및 LocalStorage 저장 서비스 호출
+        await supabaseService.saveBio(updatedBio);
 
         if (this.onSave) this.onSave();
     }
