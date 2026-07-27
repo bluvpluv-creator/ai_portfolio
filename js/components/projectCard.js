@@ -1,6 +1,7 @@
 /**
  * 프로젝트(Projects) 갤러리 컨트롤러 모듈
- * projects.json 데이터셋을 로드하고 카테고리 필터링 및 카드 그리드를 렌더링합니다.
+ * LocalStorage에 저장된 커스텀 프로젝트가 있으면 우선합쳐서 렌더링하고, 없으면 projects.json을 기본 로드합니다.
+ * 모든 주석은 한글로 작성되었습니다.
  */
 import { Card } from './Card.js';
 
@@ -22,12 +23,19 @@ export class ProjectsController {
     }
 
     /**
-     * 데이터 로드 및 초기화
+     * 데이터 로드 및 LocalStorage 병합 초기화
      */
     async init() {
         try {
+            // 1. 기본 projects.json 로드
             const response = await fetch('js/data/projects.json');
-            this.projects = await response.json();
+            const defaultProjects = await response.json();
+
+            // 2. LocalStorage 수정한 프로젝트 가져오기
+            const storedProjects = JSON.parse(localStorage.getItem('portfolio_projects') || '[]');
+
+            // LocalStorage의 신규 프로젝트를 맨 앞에 합치기
+            this.projects = [...storedProjects, ...defaultProjects];
 
             this.renderPills();
             this.renderGrid();
@@ -68,7 +76,6 @@ export class ProjectsController {
      * 선택된 카테고리에 맞는 프로젝트 카드 그리드 렌더링
      */
     renderGrid() {
-        // 선택된 카테고리로 필터링
         const filtered = this.activeCategory === 'all'
             ? this.projects
             : this.projects.filter(p => p.category === this.activeCategory);
@@ -84,7 +91,7 @@ export class ProjectsController {
             return;
         }
 
-        // 재사용 가능한 Card 컴포넌트(Card.createProjectCard)를 이용해 렌더링
+        // 재사용 가능한 Card 컴포넌트를 사용하여 카드 생성 및 배치
         filtered.forEach(project => {
             const cardNode = Card.createProjectCard(project, this.onOpenModal);
             this.gridContainer.appendChild(cardNode);

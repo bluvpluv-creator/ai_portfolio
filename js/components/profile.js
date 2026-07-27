@@ -1,6 +1,7 @@
 /**
  * 프로필(Profile) 히어로 섹션 렌더러 모듈
- * bio.json 데이터셋을 로드하여 히어로 카드를 동적으로 조합하고 렌더링합니다.
+ * LocalStorage에 커스텀 데이터가 있으면 우선 연동하고, 없으면 bio.json을 로드합니다.
+ * 모든 주석은 한글로 작성되었습니다.
  */
 import { Badge } from './Badge.js';
 
@@ -10,21 +11,29 @@ import { Badge } from './Badge.js';
  */
 export async function renderProfile(containerEl) {
     try {
-        // bio.json 데이터 로드
-        const response = await fetch('js/data/bio.json');
-        const bioData = await response.json();
+        let bioData = null;
+
+        // 1. LocalStorage 우선 체크
+        const storedBio = localStorage.getItem('portfolio_bio');
+        if (storedBio) {
+            bioData = JSON.parse(storedBio);
+        } else {
+            // 2. 기본 bio.json 데이터 로드
+            const response = await fetch('js/data/bio.json');
+            bioData = await response.json();
+        }
 
         // 학부 브랜드 뱃지(Badge) 생성
         const univBadgeHtml = new Badge({
-            text: `${bioData.university} • ${bioData.department}`,
+            text: `${bioData.university || '한국외국어대학교 (서울)'} • ${bioData.department || 'Language & AI 융합학부'}`,
             variant: 'blue',
             icon: '🎓'
         }).render().outerHTML;
 
         // 스킬 칩 목록 HTML 조합
-        const skillsHtml = bioData.skills.map(skill => `
+        const skillsHtml = (bioData.skills || []).map(skill => `
             <div class="skill-chip">
-                <span class="skill-icon">${skill.icon}</span>
+                <span class="skill-icon">${skill.icon || '⚡'}</span>
                 <div>
                     <div class="skill-title">${skill.name}</div>
                     <div class="skill-desc">${skill.desc}</div>
@@ -35,11 +44,11 @@ export async function renderProfile(containerEl) {
         containerEl.innerHTML = `
             <div class="card hero-card animate-fade-in">
                 <div class="hero-avatar-wrapper">
-                    <img src="${bioData.avatar}" alt="${bioData.name}" class="hero-avatar-img" />
+                    <img src="${bioData.avatar || 'assets/images/profile_avatar.svg'}" alt="${bioData.name}" class="hero-avatar-img" />
                 </div>
                 <div class="hero-info-group">
                     <div>${univBadgeHtml}</div>
-                    <h1 class="hero-name">${bioData.name} <span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 500;">(${bioData.englishName})</span></h1>
+                    <h1 class="hero-name">${bioData.name} <span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 500;">(${bioData.englishName || 'Minseo Kim'})</span></h1>
                     <p class="hero-subtitle">${bioData.subtitle}</p>
                     
                     <div class="bio-summary-box">
