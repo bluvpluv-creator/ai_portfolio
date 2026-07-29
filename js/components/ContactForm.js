@@ -1,6 +1,6 @@
 /**
  * EmailJS 기반 이메일 문의 연락폼 컴포넌트 (js/components/ContactForm.js)
- * 방문자의 이름, 본인 이메일 주소, 메시지를 입력받아 EmailJS API를 통해 실시간 이메일을 전송합니다.
+ * Vercel 환경 변수(Environment Variables) 및 브라우저 설정을 감지하여 실시간 이메일을 전송합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './Button.js';
@@ -15,10 +15,18 @@ export class ContactForm {
         this.onSuccess = options.onSuccess;
         this.onError = options.onError;
 
-        // 사용자가 제공한 EmailJS 환경 설정 값
-        this.serviceID = 'service_7hhx1wk';
-        this.templateID = 'template_xr85xnc';
-        this.publicKey = 'PCeQnME1tnVXRl65u';
+        // Vercel 환경변수 감지 및 기본값 폴백
+        this.serviceID = (typeof process !== 'undefined' && process.env?.EMAILJS_SERVICE_ID)
+            || (typeof window !== 'undefined' && window._env_?.EMAILJS_SERVICE_ID)
+            || 'service_7hhx1wk';
+
+        this.templateID = (typeof process !== 'undefined' && process.env?.EMAILJS_TEMPLATE_ID)
+            || (typeof window !== 'undefined' && window._env_?.EMAILJS_TEMPLATE_ID)
+            || 'template_xr85xnc';
+
+        this.publicKey = (typeof process !== 'undefined' && process.env?.EMAILJS_PUBLIC_KEY)
+            || (typeof window !== 'undefined' && window._env_?.EMAILJS_PUBLIC_KEY)
+            || 'PCeQnME1tnVXRl65u';
 
         this.isSending = false;
         this.initEmailJS();
