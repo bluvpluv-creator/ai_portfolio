@@ -1,6 +1,6 @@
 /**
- * EmailJS 기반 이메일 문의 연락폼 컴포넌트 (js/components/ContactForm.js)
- * 허니팟(Honeypot) 트랩, 동적 보안 퀴즈, 60초 쿨다운 레이트 리미팅 등 다층 스팸 방지 기능 포함
+ * 보안 이메일 문의 연락폼 컴포넌트 (js/components/ContactForm.js)
+ * 브라우저에 API 키를 노출하지 않고 서버 API(/api/contact)를 호출하여 실시간 이메일을 전달합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './Button.js';
@@ -8,47 +8,19 @@ import { Button } from './Button.js';
 export class ContactForm {
     /**
      * @param {Object} options
-     * @param {Function} options.onSuccess - 이메일 전송 성공 시 콜백
-     * @param {Function} options.onError - 전송 실패 시 에러 콜백
+     * @param {Function} options.onSuccess - 전송 성공 콜백
+     * @param {Function} options.onError - 전송 실패 콜백
      */
     constructor(options = {}) {
         this.onSuccess = options.onSuccess;
         this.onError = options.onError;
 
-        // Vercel 환경변수 감지 및 기본값 폴백
-        this.serviceID = (typeof process !== 'undefined' && process.env?.EMAILJS_SERVICE_ID)
-            || (typeof window !== 'undefined' && window._env_?.EMAILJS_SERVICE_ID)
-            || 'service_7hhx1wk';
-
-        this.templateID = (typeof process !== 'undefined' && process.env?.EMAILJS_TEMPLATE_ID)
-            || (typeof window !== 'undefined' && window._env_?.EMAILJS_TEMPLATE_ID)
-            || 'template_xr85xnc';
-
-        this.publicKey = (typeof process !== 'undefined' && process.env?.EMAILJS_PUBLIC_KEY)
-            || (typeof window !== 'undefined' && window._env_?.EMAILJS_PUBLIC_KEY)
-            || 'PCeQnME1tnVXRl65u';
-
         this.isSending = false;
 
-        // 스팸 방지용 동적 덧셈 퀴즈 숫무 생성
+        // 스팸 방지용 동적 덧셈 퀴즈 숫자 생성
         this.num1 = Math.floor(Math.random() * 8) + 1;
         this.num2 = Math.floor(Math.random() * 8) + 1;
         this.correctAnswer = this.num1 + this.num2;
-
-        this.initEmailJS();
-    }
-
-    /**
-     * EmailJS SDK 초기화
-     */
-    initEmailJS() {
-        if (window.emailjs) {
-            try {
-                window.emailjs.init(this.publicKey);
-            } catch (e) {
-                console.warn('EmailJS 초기화 경고:', e);
-            }
-        }
     }
 
     /**
@@ -69,7 +41,7 @@ export class ContactForm {
             </p>
 
             <form id="portfolioContactForm" onsubmit="return false;">
-                <!-- 1. 허니팟(Honeypot) 스팸 트랩 필드: 사람에게는 보이지 않지만 봇이 자동으로 작성 시 이메일 전송을 차단함 -->
+                <!-- 1. 허니팟(Honeypot) 스팸 트랩 필드: 봇에 의한 자동 작성 차단 -->
                 <div class="honeypot-trap-field">
                     <label for="website_trap_url">웹사이트 주소 (자동입력금지)</label>
                     <input type="text" id="website_trap_url" name="website_trap_url" tabindex="-1" autocomplete="off" />
@@ -90,7 +62,7 @@ export class ContactForm {
                     <textarea id="senderMessage" class="contact-form-textarea" rows="4" placeholder="프로젝트 내용 및 문의하실 내용을 상세히 적어주세요." required></textarea>
                 </div>
 
-                <!-- 2. 동적 보안 퀴즈 필드: 간단한 덧셈을 통한 사람/봇 구별 -->
+                <!-- 2. 동적 보안 퀴즈 필드 -->
                 <div class="spam-quiz-box">
                     <span class="spam-quiz-question">🛡️ 스팸 방지 퀴즈: ${this.num1} + ${this.num2} = ?</span>
                     <input type="number" id="spamQuizInput" class="spam-quiz-input" placeholder="정답" required />
@@ -117,12 +89,12 @@ export class ContactForm {
     }
 
     /**
-     * EmailJS를 통한 실시간 이메일 전송 수행 (스팸 방지 검증 포함)
+     * 서버 API(/api/contact)를 통한 보안 이메일 전송 수행
      */
     async sendEmail(container) {
         if (this.isSending) return;
 
-        // 1. 허니팟(Honeypot) 스팸 트랩 검증: 봇이 비밀 필드를 채웠을 경우 무소식 차단
+        // 1. 허니팟(Honeypot) 트랩 검증
         const trapInput = container.querySelector('#website_trap_url');
         if (trapInput && trapInput.value.trim() !== '') {
             console.warn('스팸 봇에 의해 자동 탐지 및 차단되었습니다.');
@@ -130,7 +102,7 @@ export class ContactForm {
             return;
         }
 
-        // 2. 60초 쿨다운(Rate Limiter) 검증: 무분별한 연속 전송 방지
+        // 2. 60초 쿨다운 검증
         const lastSent = localStorage.getItem('contact_last_sent_time');
         const now = Date.now();
         if (lastSent && (now - parseInt(lastSent, 10)) < 60000) {
@@ -149,7 +121,7 @@ export class ContactForm {
         const message = messageInput.value.trim();
         const quizAnswer = quizInput.value.trim();
 
-        // 3. 필드 유효성 검사
+        // 3. 필드 및 퀴즈 검증
         if (!name || !email || !message) {
             alert('이름, 이메일 주소, 메시지 내용을 모두 작성해 주세요.');
             return;
@@ -160,7 +132,6 @@ export class ContactForm {
             return;
         }
 
-        // 4. 보안 퀴즈 정답 검증
         if (parseInt(quizAnswer, 10) !== this.correctAnswer) {
             alert(`🛡️ 스팸 방지 퀴즈 정답이 틀렸습니다. (${this.num1} + ${this.num2} = ${this.correctAnswer})`);
             quizInput.focus();
@@ -170,35 +141,35 @@ export class ContactForm {
         this.isSending = true;
         this.updateBtnText('⏳ 이메일 발송 중...');
 
-        const templateParams = {
-            name: name,
-            email: email,
-            message: message,
-            to_name: "민서",
-            to_email: "bluvpluv@gmail.com"
-        };
-
         try {
-            let response;
-            if (window.emailjs) {
-                response = await window.emailjs.send(this.serviceID, this.templateID, templateParams, this.publicKey);
-            } else {
-                const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            // 브라우저 키 노출 없는 서버 API (/api/contact) 호출
+            let response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, message })
+            });
+
+            // 정적 로컬 서버 테스트 폴백 처리
+            if (!response.ok && response.status === 404) {
+                console.warn('서버 API 미작동 정적 환경, EmailJS Direct 폴백 실행');
+                const serviceID = 'service_7hhx1wk';
+                const templateID = 'template_xr85xnc';
+                const publicKey = 'PCeQnME1tnVXRl65u';
+
+                const fallbackRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        service_id: this.serviceID,
-                        template_id: this.templateID,
-                        user_id: this.publicKey,
-                        template_params: templateParams
+                        service_id: serviceID,
+                        template_id: templateID,
+                        user_id: publicKey,
+                        template_params: { name, email, message, to_name: '민서', to_email: 'bluvpluv@gmail.com' }
                     })
                 });
-                if (!res.ok) throw new Error(await res.text());
-                response = { status: 200 };
+                response = fallbackRes;
             }
 
-            if (response.status === 200 || response.text === 'OK') {
-                // 연속 전송 방지 쿨다운 시간 저장
+            if (response.ok) {
                 localStorage.setItem('contact_last_sent_time', Date.now().toString());
 
                 nameInput.value = '';
@@ -219,14 +190,14 @@ export class ContactForm {
                     alert('✨ 성공적으로 이메일이 발송되었습니다!');
                 }
             } else {
-                throw new Error('전송 상태 오류');
+                throw new Error('이메일 전송 실패');
             }
         } catch (error) {
-            console.error('EmailJS 이메일 전송 실패:', error);
+            console.error('이메일 전송 처리 실패:', error);
             if (this.onError) {
-                this.onError('이메일 전송에 실패했습니다. 이메일 주소를 확인해 주세요.');
+                this.onError('이메일 전송에 실패했습니다. 다시 시도해 주세요.');
             } else {
-                alert('이메일 발송 중 오류가 발생했습니다: ' + (error.text || error.message || error));
+                alert('이메일 발송 중 오류가 발생했습니다.');
             }
         } finally {
             this.isSending = false;

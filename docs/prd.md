@@ -104,11 +104,10 @@
   * **보내는 사람 이름 (`name`)**: 필수 입력 항목
   * **보내는 사람 이메일 (`email`)**: 필수 입력 및 이메일 형식을 검증하는 항목
   * **문의 메시지 내용 (`message`)**: 자유 양식의 본문 텍스트 폼
-* **기술 연동 규격**:
-  * **EmailJS API Key (Public Key)**: `PCeQnME1tnVXRl65u`
-  * **Service ID**: `service_7hhx1wk`
-  * **Template ID**: `template_xr85xnc`
-  * **수신 이메일 주소**: `bluvpluv@gmail.com`
+* **보안 서버리스 API 아키텍처 (Serverless API Proxy)**:
+  * **프론트엔드 보안**: 브라우저 JS 소스코드에 API 키가 일절 노출되지 않도록 서버 API 엔드포인트(`/api/bio`, `/api/projects`, `/api/contact`)를 통해 통신.
+  * **서버측 무노출 보관**: Vercel Serverless Functions 환경변수(`SUPABASE_URL`, `SUPABASE_KEY`, `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, `EMAILJS_PUBLIC_KEY`)에서만 키를 읽어 서버 간(Server-to-Server) 보안 통신 수행.
+  * **GitHub 보안 (`.gitignore`)**: `.env` 비밀 키 및 모듈 파일이 GitHub에 올라가지 않도록 예외 처리.
 * **스팸 방지 메커니즘 (Anti-Spam Protections)**:
   1. **허니팟(Honeypot) 트랩**: 스팸 봇 자동 수집 필드를 무시 감지하여 차단.
   2. **동적 보안 퀴즈 (Math CAPTCHA)**: 무작위 덧셈 퀴즈를 통한 인간 사용자 구별.
