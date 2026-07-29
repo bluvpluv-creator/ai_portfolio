@@ -1,6 +1,6 @@
 /**
  * EmailJS 기반 이메일 문의 연락폼 컴포넌트 (js/components/ContactForm.js)
- * 방문자의 이름, 이메일 주소, 메시지를 입력받아 EmailJS API를 통해 실시간 이메일을 전송합니다.
+ * 방문자의 이름, 본인 이메일 주소, 메시지를 입력받아 EmailJS API를 통해 실시간 이메일을 전송합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './Button.js';
@@ -61,7 +61,7 @@ export class ContactForm {
                 </div>
 
                 <div class="contact-form-group">
-                    <label class="contact-form-label" for="senderEmail">답장받을 이메일 주소 *</label>
+                    <label class="contact-form-label" for="senderEmail">본인 이메일 주소 *</label>
                     <input type="email" id="senderEmail" class="contact-form-input" placeholder="example@domain.com" required />
                 </div>
 
