@@ -1,6 +1,6 @@
 /**
  * EmailJS 기반 이메일 문의 연락폼 컴포넌트 (js/components/ContactForm.js)
- * 이름, 이메일 주소, 메시지를 입력받아 EmailJS API를 통해 실시간으로 이메일을 전송합니다.
+ * 답장받을 이메일 주소를 bluvpluv@gmail.com으로 고정하여 실시간 이메일을 전송합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './Button.js';
@@ -15,10 +15,11 @@ export class ContactForm {
         this.onSuccess = options.onSuccess;
         this.onError = options.onError;
 
-        // 사용자가 제공한 EmailJS 환경 설정 값
+        // 사용자가 제공한 EmailJS 환경 설정 값 및 고정 이메일
         this.serviceID = 'service_7hhx1wk';
         this.templateID = 'template_xr85xnc';
         this.publicKey = 'PCeQnME1tnVXRl65u';
+        this.fixedRecipientEmail = 'bluvpluv@gmail.com';
 
         this.isSending = false;
         this.initEmailJS();
@@ -51,7 +52,7 @@ export class ContactForm {
                 <span>이메일 문의 보내기</span>
             </div>
             <p class="contact-form-desc">
-                프로젝트 제안이나 협업 문의사항을 남겨주시면 <code>bluvpluv@gmail.com</code>으로 실시간 전달됩니다.
+                프로젝트 제안이나 협업 문의사항을 남겨주시면 <code>${this.fixedRecipientEmail}</code>으로 실시간 전달됩니다.
             </p>
 
             <form id="portfolioContactForm" onsubmit="return false;">
@@ -61,8 +62,8 @@ export class ContactForm {
                 </div>
 
                 <div class="contact-form-group">
-                    <label class="contact-form-label" for="senderEmail">답장받을 이메일 주소 *</label>
-                    <input type="email" id="senderEmail" class="contact-form-input" placeholder="example@domain.com" required />
+                    <label class="contact-form-label" for="senderEmail">답장받을 이메일 주소 (고정) *</label>
+                    <input type="email" id="senderEmail" class="contact-form-input" value="${this.fixedRecipientEmail}" readonly style="background-color: var(--bg-muted, #f8fafc); cursor: not-allowed;" />
                 </div>
 
                 <div class="contact-form-group">
@@ -97,44 +98,35 @@ export class ContactForm {
         if (this.isSending) return;
 
         const nameInput = container.querySelector('#senderName');
-        const emailInput = container.querySelector('#senderEmail');
         const messageInput = container.querySelector('#senderMessage');
 
         const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
         const message = messageInput.value.trim();
+        const email = this.fixedRecipientEmail; // 고정 이메일 사용
 
         // 입력 폼 유효성 검사
-        if (!name || !email || !message) {
-            alert('이름, 이메일 주소, 메시지 내용을 모두 작성해 주세요.');
-            return;
-        }
-
-        // 이메일 형식 간단 검증
-        if (!email.includes('@') || !email.includes('.')) {
-            alert('올바른 이메일 주소 형식을 입력해 주세요.');
+        if (!name || !message) {
+            alert('보내는 사람 이름과 문의 내용 메시지를 작성해 주세요.');
             return;
         }
 
         this.isSending = true;
         this.updateBtnText('⏳ 이메일 발송 중...');
 
-        // 템플릿 매개변수 설정
+        // 사용자 요청 전송 구조에 맞춘 템플릿 매개변수 설정
         const templateParams = {
             name: name,
-            email: email,
+            email: email, // 고정 이메일 bluvpluv@gmail.com
             message: message,
-            to_name: '민서',
-            to_email: 'bluvpluv@gmail.com'
+            to_name: "민서",
+            to_email: email
         };
 
         try {
-            // EmailJS 전송 실행
             let response;
             if (window.emailjs) {
                 response = await window.emailjs.send(this.serviceID, this.templateID, templateParams, this.publicKey);
             } else {
-                // EmailJS SDK 미로드 시 REST API 직접 호출
                 const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -150,15 +142,13 @@ export class ContactForm {
             }
 
             if (response.status === 200 || response.text === 'OK') {
-                // 전송 성공 처리
                 nameInput.value = '';
-                emailInput.value = '';
                 messageInput.value = '';
 
                 if (this.onSuccess) {
-                    this.onSuccess('✨ 이메일이 성공적으로 전송되었습니다!');
+                    this.onSuccess('✨ 이메일이 성공적으로 bluvpluv@gmail.com으로 전송되었습니다!');
                 } else {
-                    alert('✨ 성공적으로 이메일이 발송되었습니다! 빠르게 답변드리겠습니다.');
+                    alert('✨ 성공적으로 이메일이 발송되었습니다!');
                 }
             } else {
                 throw new Error('전송 상태 오류');
@@ -166,7 +156,7 @@ export class ContactForm {
         } catch (error) {
             console.error('EmailJS 이메일 전송 실패:', error);
             if (this.onError) {
-                this.onError('이메일 전송에 실패했습니다. 이메일 주소를 다시 확인해 주세요.');
+                this.onError('이메일 전송에 실패했습니다. 다시 시도해 주세요.');
             } else {
                 alert('이메일 발송 중 오류가 발생했습니다: ' + (error.text || error.message || error));
             }
