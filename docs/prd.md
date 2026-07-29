@@ -109,6 +109,10 @@
   * **Service ID**: `service_7hhx1wk`
   * **Template ID**: `template_xr85xnc`
   * **수신 이메일 주소**: `bluvpluv@gmail.com`
+* **스팸 방지 메커니즘 (Anti-Spam Protections)**:
+  1. **허니팟(Honeypot) 트랩**: 스팸 봇 자동 수집 필드를 무시 감지하여 차단.
+  2. **동적 보안 퀴즈 (Math CAPTCHA)**: 무작위 덧셈 퀴즈를 통한 인간 사용자 구별.
+  3. **연속 발송 쿨다운 (Rate Limiting)**: 60초 내 도배성 연속 발송 차단.
 * **사용자 경험 (UX)**:
   * 전송 중 로딩 상태 표시 (`⏳ 이메일 발송 중...`)
   * 성공 시 폼 자동 리셋 및 토스트 알림 ("✨ 성공적으로 이메일이 발송되었습니다!")

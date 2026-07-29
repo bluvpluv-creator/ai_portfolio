@@ -1,6 +1,6 @@
 /**
  * EmailJS 기반 이메일 문의 연락폼 컴포넌트 (js/components/ContactForm.js)
- * Vercel 환경 변수(Environment Variables) 및 브라우저 설정을 감지하여 실시간 이메일을 전송합니다.
+ * 허니팟(Honeypot) 트랩, 동적 보안 퀴즈, 60초 쿨다운 레이트 리미팅 등 다층 스팸 방지 기능 포함
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './Button.js';
@@ -8,7 +8,7 @@ import { Button } from './Button.js';
 export class ContactForm {
     /**
      * @param {Object} options
-     * @param {Function} options.onSuccess - 이메일 전송 성공 시 토스트 및 알림 콜백
+     * @param {Function} options.onSuccess - 이메일 전송 성공 시 콜백
      * @param {Function} options.onError - 전송 실패 시 에러 콜백
      */
     constructor(options = {}) {
@@ -29,6 +29,12 @@ export class ContactForm {
             || 'PCeQnME1tnVXRl65u';
 
         this.isSending = false;
+
+        // 스팸 방지용 동적 덧셈 퀴즈 숫무 생성
+        this.num1 = Math.floor(Math.random() * 8) + 1;
+        this.num2 = Math.floor(Math.random() * 8) + 1;
+        this.correctAnswer = this.num1 + this.num2;
+
         this.initEmailJS();
     }
 
@@ -40,7 +46,7 @@ export class ContactForm {
             try {
                 window.emailjs.init(this.publicKey);
             } catch (e) {
-                console.warn('EmailJS 이미 초기화되었거나 경고:', e);
+                console.warn('EmailJS 초기화 경고:', e);
             }
         }
     }
@@ -63,6 +69,12 @@ export class ContactForm {
             </p>
 
             <form id="portfolioContactForm" onsubmit="return false;">
+                <!-- 1. 허니팟(Honeypot) 스팸 트랩 필드: 사람에게는 보이지 않지만 봇이 자동으로 작성 시 이메일 전송을 차단함 -->
+                <div class="honeypot-trap-field">
+                    <label for="website_trap_url">웹사이트 주소 (자동입력금지)</label>
+                    <input type="text" id="website_trap_url" name="website_trap_url" tabindex="-1" autocomplete="off" />
+                </div>
+
                 <div class="contact-form-group">
                     <label class="contact-form-label" for="senderName">보내는 사람 이름 *</label>
                     <input type="text" id="senderName" class="contact-form-input" placeholder="예: 김민서 / 채용 담당자" required />
@@ -76,6 +88,12 @@ export class ContactForm {
                 <div class="contact-form-group">
                     <label class="contact-form-label" for="senderMessage">문의 내용 메시지 *</label>
                     <textarea id="senderMessage" class="contact-form-textarea" rows="4" placeholder="프로젝트 내용 및 문의하실 내용을 상세히 적어주세요." required></textarea>
+                </div>
+
+                <!-- 2. 동적 보안 퀴즈 필드: 간단한 덧셈을 통한 사람/봇 구별 -->
+                <div class="spam-quiz-box">
+                    <span class="spam-quiz-question">🛡️ 스팸 방지 퀴즈: ${this.num1} + ${this.num2} = ?</span>
+                    <input type="number" id="spamQuizInput" class="spam-quiz-input" placeholder="정답" required />
                 </div>
 
                 <div class="contact-form-actions">
@@ -99,20 +117,39 @@ export class ContactForm {
     }
 
     /**
-     * EmailJS를 통한 실시간 이메일 전송 수행
+     * EmailJS를 통한 실시간 이메일 전송 수행 (스팸 방지 검증 포함)
      */
     async sendEmail(container) {
         if (this.isSending) return;
 
+        // 1. 허니팟(Honeypot) 스팸 트랩 검증: 봇이 비밀 필드를 채웠을 경우 무소식 차단
+        const trapInput = container.querySelector('#website_trap_url');
+        if (trapInput && trapInput.value.trim() !== '') {
+            console.warn('스팸 봇에 의해 자동 탐지 및 차단되었습니다.');
+            alert('스팸 시도로 감지되었습니다.');
+            return;
+        }
+
+        // 2. 60초 쿨다운(Rate Limiter) 검증: 무분별한 연속 전송 방지
+        const lastSent = localStorage.getItem('contact_last_sent_time');
+        const now = Date.now();
+        if (lastSent && (now - parseInt(lastSent, 10)) < 60000) {
+            const remainSec = Math.ceil((60000 - (now - parseInt(lastSent, 10))) / 1000);
+            alert(`🔒 도배 방지를 위해 약 ${remainSec}초 후에 다시 시도해 주세요.`);
+            return;
+        }
+
         const nameInput = container.querySelector('#senderName');
         const emailInput = container.querySelector('#senderEmail');
         const messageInput = container.querySelector('#senderMessage');
+        const quizInput = container.querySelector('#spamQuizInput');
 
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
         const message = messageInput.value.trim();
+        const quizAnswer = quizInput.value.trim();
 
-        // 입력 폼 유효성 검사
+        // 3. 필드 유효성 검사
         if (!name || !email || !message) {
             alert('이름, 이메일 주소, 메시지 내용을 모두 작성해 주세요.');
             return;
@@ -123,10 +160,16 @@ export class ContactForm {
             return;
         }
 
+        // 4. 보안 퀴즈 정답 검증
+        if (parseInt(quizAnswer, 10) !== this.correctAnswer) {
+            alert(`🛡️ 스팸 방지 퀴즈 정답이 틀렸습니다. (${this.num1} + ${this.num2} = ${this.correctAnswer})`);
+            quizInput.focus();
+            return;
+        }
+
         this.isSending = true;
         this.updateBtnText('⏳ 이메일 발송 중...');
 
-        // 템플릿 매개변수 설정 (방문자 입력 이메일 적용)
         const templateParams = {
             name: name,
             email: email,
@@ -155,9 +198,20 @@ export class ContactForm {
             }
 
             if (response.status === 200 || response.text === 'OK') {
+                // 연속 전송 방지 쿨다운 시간 저장
+                localStorage.setItem('contact_last_sent_time', Date.now().toString());
+
                 nameInput.value = '';
                 emailInput.value = '';
                 messageInput.value = '';
+                quizInput.value = '';
+
+                // 새로운 퀴즈 문제 갱신
+                this.num1 = Math.floor(Math.random() * 8) + 1;
+                this.num2 = Math.floor(Math.random() * 8) + 1;
+                this.correctAnswer = this.num1 + this.num2;
+                const quizLabel = container.querySelector('.spam-quiz-question');
+                if (quizLabel) quizLabel.textContent = `🛡️ 스팸 방지 퀴즈: ${this.num1} + ${this.num2} = ?`;
 
                 if (this.onSuccess) {
                     this.onSuccess('✨ 이메일이 성공적으로 전송되었습니다!');

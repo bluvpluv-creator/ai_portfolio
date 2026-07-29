@@ -1,6 +1,6 @@
 /* ==========================================================================
    EmailJS 이메일 문의 연락폼(ContactForm) 컴포넌트 스타일 규격
-   design.md 가이드 기반: Sharp Elegant Style (border-radius: 8px) 입력 필드
+   design.md 가이드 기반: Sharp Elegant Style (border-radius: 8px) 입력 필드 및 스팸 방지 퀴즈
    ========================================================================== */
 
 .contact-form-container {
@@ -63,6 +63,48 @@
 .contact-form-textarea:focus {
     border-color: var(--primary-blue, #3b82f6);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* 허니팟(Honeypot) 스팸 트랩 필드 - 사용자 시야에서 완전히 감춤 */
+.honeypot-trap-field {
+    display: none !important;
+    opacity: 0;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    height: 0;
+    width: 0;
+    z-index: -1;
+}
+
+/* 스팸 방지 퀴즈 바 */
+.spam-quiz-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px dashed var(--border-color, #e2e8f0);
+    border-radius: var(--radius-btn, 8px);
+    padding: 12px 16px;
+    margin-bottom: 18px;
+}
+
+.spam-quiz-question {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    white-space: nowrap;
+}
+
+.spam-quiz-input {
+    width: 80px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-btn, 8px);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
 }
 
 .contact-form-actions {
