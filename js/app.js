@@ -1,6 +1,6 @@
 /**
  * 포트폴리오 메인 어플리케이션 엔트리 포인트 (js/app.js)
- * 모듈화된 UI 컴포넌트(Navbar, Profile, ProjectsController, ModalComponent, AdminModal, Toast, Button)를 초기화하고 바인딩합니다.
+ * 모듈화된 UI 컴포넌트(Navbar, Profile, ProjectsController, ModalComponent, AdminModal, ContactForm, Toast, Button)를 초기화하고 바인딩합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Navbar } from './components/Navbar.js';
@@ -8,6 +8,7 @@ import { renderProfile } from './components/profile.js';
 import { ProjectsController } from './components/projectCard.js';
 import { ModalComponent } from './components/ModalComponent.js';
 import { AdminModal } from './components/AdminModal.js';
+import { ContactForm } from './components/ContactForm.js';
 import { Toast } from './components/Toast.js';
 import { Button } from './components/Button.js';
 
@@ -27,6 +28,7 @@ class PortfolioApp {
         this.projectsGridContainer = document.getElementById('projectsGrid');
         this.modalOverlay = document.getElementById('projectModalOverlay');
         this.contactActionsContainer = document.getElementById('contactActionsContainer');
+        this.contactFormSlot = document.getElementById('contactFormSlot');
         this.toastEl = document.getElementById('toastNotification');
         this.toastMessageEl = document.getElementById('toastMessage');
     }
@@ -61,14 +63,14 @@ class PortfolioApp {
             });
         }
 
-        // 3. 프로필 히어로 섹션 (profile.js + Card.js + Badge.js) 렌더링
-        if (this.profileContainer) {
-            renderProfile(this.profileContainer);
-        }
-
-        // 4. 토스트 알림 컴포넌트 (Toast.js) 초기화
+        // 3. 토스트 알림 컴포넌트 (Toast.js) 초기화
         if (this.toastEl && this.toastMessageEl) {
             this.toast = new Toast(this.toastEl, this.toastMessageEl);
+        }
+
+        // 4. 프로필 히어로 섹션 (profile.js + Card.js + Badge.js) 렌더링
+        if (this.profileContainer) {
+            renderProfile(this.profileContainer);
         }
 
         // 5. 프로젝트 카드 그리드 및 카테고리 컨트롤러 (projectCard.js + Card.js + Button.js) 초기화
@@ -82,6 +84,20 @@ class PortfolioApp {
 
         // 6. 연락처 섹션 재사용 버튼(Button.js) 컴포넌트 및 Admin 진입 버튼 조립
         this.renderContactButtons();
+
+        // 7. EmailJS 기반 실시간 이메일 연락폼 컴포넌트(ContactForm.js) 렌더링
+        if (this.contactFormSlot) {
+            const contactFormNode = new ContactForm({
+                onSuccess: (msg) => {
+                    if (this.toast) this.toast.show(msg);
+                },
+                onError: (msg) => {
+                    if (this.toast) this.toast.show(msg);
+                }
+            }).render();
+
+            this.contactFormSlot.appendChild(contactFormNode);
+        }
     }
 
     /**
@@ -94,19 +110,19 @@ class PortfolioApp {
 
         // 이메일 복사 버튼
         const copyEmailBtn = new Button({
-            text: '이메일 복사하기',
+            text: '이메일 주소 복사',
             variant: 'ghost-dark',
             size: 'lg',
             icon: '✉️',
             onClick: () => {
-                const email = 'minseo.kim.ai@hufs.ac.kr';
+                const email = 'bluvpluv@gmail.com';
                 navigator.clipboard.writeText(email).then(() => {
                     if (this.toast) {
-                        this.toast.show('✨ 이메일 주소가 클립보드에 복사되었습니다!');
+                        this.toast.show('✨ 이메일 주소(bluvpluv@gmail.com)가 복사되었습니다!');
                     }
                 }).catch(() => {
                     if (this.toast) {
-                        this.toast.show('이메일 주소: minseo.kim.ai@hufs.ac.kr');
+                        this.toast.show('이메일 주소: bluvpluv@gmail.com');
                     }
                 });
             }
@@ -118,7 +134,7 @@ class PortfolioApp {
             variant: 'ghost-dark',
             size: 'lg',
             icon: '💻',
-            href: 'https://github.com'
+            href: 'https://github.com/bluvpluv-creator'
         }).render();
 
         // 관리자 모드 진입 버튼 (Ctrl + Shift + A 단축키 또는 버튼 클릭)

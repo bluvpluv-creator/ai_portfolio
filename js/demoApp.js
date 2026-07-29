@@ -1,6 +1,6 @@
 /**
  * UI 컴포넌트 데모 쇼케이스 어플리케이션 (js/demoApp.js)
- * 독립적으로 모듈화된 UI 컴포넌트(Button, Badge, Card, ModalComponent, AdminModal, Toast)의 렌더링 및 인터랙션을 테스트합니다.
+ * 독립적으로 모듈화된 UI 컴포넌트(Button, Badge, Card, ModalComponent, AdminModal, ContactForm, Toast)의 렌더링 및 인터랙션을 테스트합니다.
  * 모든 주석은 한글로 작성되었습니다.
  */
 import { Button } from './components/Button.js';
@@ -8,6 +8,7 @@ import { Badge } from './components/Badge.js';
 import { Card } from './components/Card.js';
 import { ModalComponent } from './components/ModalComponent.js';
 import { AdminModal } from './components/AdminModal.js';
+import { ContactForm } from './components/ContactForm.js';
 import { Toast } from './components/Toast.js';
 
 class DemoApp {
@@ -17,6 +18,7 @@ class DemoApp {
         this.renderBadges();
         this.renderCards();
         this.renderInteractiveTriggers();
+        this.renderContactForm();
     }
 
     /**
@@ -185,6 +187,24 @@ class DemoApp {
         document.getElementById('btnTriggerModal')?.appendChild(modalTriggerBtn);
         document.getElementById('btnTriggerAdmin')?.appendChild(adminTriggerBtn);
         document.getElementById('btnTriggerToast')?.appendChild(toastTriggerBtn);
+    }
+
+    /**
+     * 5. EmailJS 이메일 문의 연락폼(ContactForm.js) 렌더링
+     */
+    renderContactForm() {
+        const container = document.getElementById('demoContactFormContainer');
+        if (container) {
+            const formNode = new ContactForm({
+                onSuccess: (msg) => {
+                    if (this.toast) this.toast.show(msg);
+                },
+                onError: (msg) => {
+                    if (this.toast) this.toast.show(msg);
+                }
+            }).render();
+            container.appendChild(formNode);
+        }
     }
 }
 

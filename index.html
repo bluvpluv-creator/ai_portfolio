@@ -67,6 +67,11 @@
                 <div id="contactActionsContainer" class="contact-actions">
                     <!-- Dynamically rendered by Button component in js/app.js -->
                 </div>
+
+                <!-- EmailJS Interactive Contact Form Slot -->
+                <div id="contactFormSlot" style="margin-top: 32px;">
+                    <!-- Dynamically rendered by ContactForm.js -->
+                </div>
             </div>
         </section>
     </main>
@@ -85,6 +90,9 @@
     <div id="toastNotification" class="toast hidden" role="status">
         <span id="toastMessage">이메일 주소가 복사되었습니다!</span>
     </div>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <!-- Main JavaScript App (ES Module) -->
     <script type="module" src="js/app.js"></script>
